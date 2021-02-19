@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youguang.admin.mapper.DeptMapper">
+    <select id="allDepts" resultType="com.youguang.admin.dto.DeptDTO">
+      SELECT id id,parent_id parentId,name name ,type type,sort sort,status status,creator_name creatorName,created_time createdTime
+      FROM admin_dept;
+    </select>
+
+    <!--根据父级部门id查找子部门-->
+    <select id="querySubDepartmentById" resultType="com.youguang.admin.entities.AdminDeptEntity">
+        SELECT * FROM admin_dept
+        <where>
+            <if test="parentId != null">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper>

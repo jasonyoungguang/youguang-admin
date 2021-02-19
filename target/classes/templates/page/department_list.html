@@ -1,0 +1,234 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>部门列表</title>
+        <link rel="stylesheet" th:href="@{layui/lib/layui-v2.5.5/css/layui.css}" media="all">
+        <link rel="stylesheet" th:href="@{layui/css/public.css}" media="all">
+        <style>
+            .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
+                height: 34px;
+                line-height: 34px;
+                padding: 0 8px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="layuimini-container layuimini-page-anim">
+            <div class="layuimini-main">
+                <div>
+                    <div class="layui-btn-group">
+                        <button class="layui-btn" id="btn-expand">全部展开</button>
+                        <button class="layui-btn layui-btn-normal" id="btn-fold">全部折叠</button>
+                    </div>
+                    <table id="munu-table" class="layui-table" lay-filter="munu-table"></table>
+                </div>
+            </div>
+        </div>
+        <!-- 操作列 -->
+        <script type="text/html" id="auth-state">
+            {{# if(d.type===2){ }}
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {{# }else{ }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="add">添加</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            {{# } }}
+        </script>
+        <script>
+            layui.use(['table', 'treetable', 'form'], function () {
+                var $ = layui.jquery;
+                var table = layui.table;
+                var treetable = layui.treetable;
+                var form = layui.form;
+
+                // 渲染表格
+                layer.load(2);
+                treetable.render({
+                    treeColIndex: 3,
+                    treeSpid: 0,
+                    treeIdName: 'id',
+                    treePidName: 'parentId',
+                    elem: '#munu-table',
+                    url: 'allDepts',
+                    page: false,
+                    cols: [
+                        [
+                            {type: 'numbers'},
+                            {field: 'id', hide: true},
+                            {field: 'parentId', hide: true},
+                            {field: 'name', title: '名称', width: 180},
+                            {
+                                field: 'type', title: '类型', align: 'center', templet: function (d) {
+                                    if (d.type === 0) {
+                                        return '<span class="layui-badge layui-bg-red">公司</span>';
+                                    } else if (d.type === 1) {
+                                        return '<span class="layui-badge layui-bg-orange">部门</span>';
+                                    } else {
+                                        return '<span class="layui-badge layui-bg-green">科室/小组</span>';
+                                    }
+                                }
+                            },
+                            {field: 'sort', align: 'center', title: '排序号'},
+                            {
+                                field: 'status', align: 'center', title: '状态', templet: function (data) {
+                                    if (data.status === -1) {
+                                        return '<span class="layui-badge layui-bg-grey">禁用</span>';
+                                    } else {
+                                        return '<span class="layui-badge layui-bg-blue">启用</span>';
+                                    }
+                                }
+                            },
+                            {field: 'creatorName', title: '创建人'},
+                            {
+                                field: 'createdTime', title: '创建时间', minWidth: 200, templet: function (data) {
+                                    if (data.createdTime) {
+                                        return layui.util.toDateString(data.createdTime, "yyyy-MM-dd HH:mm:ss");
+                                    }
+                                }
+                            },
+                            {templet: '#auth-state', minWidth: 180, align: 'center', title: '操作'}
+                        ]
+                    ],
+                    done: function (res, curr, count) {
+                        layer.closeAll('loading');
+                    }
+                });
+
+                $('#btn-expand').click(function () {
+                    treetable.expandAll('#munu-table');
+                });
+
+                $('#btn-fold').click(function () {
+                    treetable.foldAll('#munu-table');
+                });
+
+                //设置表单中的值
+                function setEditData(obj, data) {
+                    console.log("data.status:" + data.status);
+                    if (data.status === 1) {
+                        data.status = 'on';
+                    } else {
+                        data.status = '';
+                    }
+
+                    //给表单赋值
+                    form.val('editDepartment', {
+                        name: data.name,
+                        status: data.status,
+                        sort: data.sort,
+                        id: data.id
+                    });
+                }
+
+                //监听提交事件
+                form.on('submit(editDepartment)', function (datas) {
+                    var data = datas.field;
+                    if (data.status === 'on') {
+                        data.status = 1;
+                    } else {
+                        data.status = -1;
+                    }
+
+                    $.ajax({
+                        url: 'department',
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            console.log(result);
+                            if (result.code === 0) {
+                                layer.msg("修改成功", {
+                                    icon: 6,
+                                    time: 500
+                                }, function () {
+                                    parent.window.location.reload();//重新加载页面
+                                    var iframeIndex = parent.layer.getFrameIndex(window.name);
+                                    parent.layer.close(iframeIndex);
+                                });
+
+                            } else {
+                                layer.msg("修改失败！");
+                            }
+                        }
+                    });
+                });
+
+                //监听工具条
+                table.on('tool(munu-table)', function (obj) {
+                    var data = obj.data;
+                    var layEvent = obj.event;
+
+                    if (layEvent === 'del') {
+                        layer.confirm("是否删除当前部门", {icon: 3, title: '是否删除?'}, function (index) {
+                            $.ajax({
+                                type: "delete",
+                                url: '/dept?deptId=' + data.id,
+                                dataType: 'json',
+                                async: true,
+                                success: function (data) {
+                                    if (data.code === 0) {
+                                        console.log(data);
+                                        layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        });
+                    } else if (layEvent === 'edit') {
+                        layer.open({
+                            type: 1,
+                            shade: 0,
+                            shadeClose: true,
+                            title: "修改信息",
+                            area: ['30%', '80%'],
+                            content: $("#editDepartment")
+                        });
+                        setEditData(obj, data);
+                    } else if (layEvent === 'add') {
+                        layer.open({
+                            title: "添加部门",
+                            type: 2,
+                            shade: 0.2,
+                            maxmin: true,
+                            shadeClose: true,
+                            area: ['30%', '80%'],
+                            content: 'addDepartment?type=' + data.type + "&parentId=" + data.id
+                        })
+                    }
+                });
+            });
+        </script>
+
+
+        <div class="layui-form layuimini-form" id="editDepartment" style="display: none;" lay-filter="editDepartment">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="id">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">部门名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" lay-verify="required" lay-reqtext="部门名称不能为空"
+                               placeholder="请输入部门名称" value="" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="status" checked lay-skin="switch" lay-text="启用|禁用">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序号</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="sort" placeholder="请输入排序" value="" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="editDepartment">确认修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
