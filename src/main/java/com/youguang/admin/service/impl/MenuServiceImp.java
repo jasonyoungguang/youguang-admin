@@ -53,4 +53,60 @@ public class MenuServiceImp implements IMenuService {
         menuEntity.initialEntity(menuDTO.getOperatorId(), menuDTO.getOperatorName());
         mapper.insert(menuEntity);
     }
+
+    /**
+     * 删除菜单
+     *
+     * @param menuId       菜单id
+     * @param operatorId   操作人userId
+     * @param operatorName 操作人姓名
+     */
+    @Override
+    public void deleteMenu(Long menuId, Long operatorId, String operatorName) {
+        if (menuId == null) {
+            throw new RuntimeException("删除菜单，id不可为空！");
+        }
+        AdminMenuEntity menuEntity = getMenuById(menuId);
+        if (menuEntity != null) {
+            menuEntity.decorateUpdateParams(operatorId, operatorName);
+            menuEntity.setStatus(AdminMenuEntity.Status.DELETED.getCode());
+
+            mapper.updateById(menuEntity);
+
+            //删除子节点
+            List<AdminMenuEntity> menuEntities = getMenusByParentId(menuEntity.getId(), AdminMenuEntity.Status.UN_DELETED);
+            if (!CollectionUtils.isEmpty(menuEntities)) {
+                //TODO 这里需要优化，将这里更改为updateBatchById(entities)
+                menuEntities.forEach(menu -> {
+                    menu.setStatus(AdminMenuEntity.Status.DELETED.getCode());
+                    menu.decorateUpdateParams(operatorId, operatorName);
+                    mapper.updateById(menuEntity);
+                });
+            }
+        }
+    }
+
+    /**
+     * 根据菜单id查找子节点
+     *
+     * @param parentId 父级节点
+     * @param status   状态{@link AdminMenuEntity.Status}
+     * @return 菜单子节点
+     */
+    private List<AdminMenuEntity> getMenusByParentId(Long parentId, AdminMenuEntity.Status status) {
+        if (parentId == null && status == null) {
+            return null;
+        }
+
+        return mapper.queryMenusByParentId(parentId, status.getCode());
+    }
+
+    /**
+     * 根据菜单id查找菜单实体
+     *
+     * @param menuId 菜单id
+     */
+    private AdminMenuEntity getMenuById(Long menuId) {
+        return mapper.selectById(menuId);
+    }
 }

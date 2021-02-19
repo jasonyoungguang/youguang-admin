@@ -20,4 +20,13 @@ public interface IMenuService {
      * @param menuDTO 待添加菜单
      */
     void addMenu(MenuDTO menuDTO);
+
+    /**
+     * 删除菜单
+     *
+     * @param menuId       菜单id
+     * @param operatorId   操作人userId
+     * @param operatorName 操作人姓名
+     */
+    void deleteMenu(Long menuId, Long operatorId, String operatorName);
 }

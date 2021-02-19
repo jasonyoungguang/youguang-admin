@@ -196,7 +196,7 @@
             var layEvent = obj.event;
 
             if (layEvent === 'del') {
-                layer.confirm("是否删除？", {icon: 3, title: '是否删除?'}, function (index) {
+                layer.confirm("是否删除？", {icon: 3, title: '是否删除?'}, function () {
                     $.ajax({
                         type: "delete",
                         url: '/menu?menuId=' + data.id,
@@ -204,12 +204,12 @@
                         async: true,
                         success: function (data) {
                             if (data.code === 0) {
-                                console.log(data);
                                 layer.msg(data.msg);
                             }
                         }
                     });
                 });
+
             } else if (layEvent === 'edit') {
                 layer.open({
                     type: 1,

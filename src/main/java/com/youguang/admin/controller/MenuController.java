@@ -44,6 +44,20 @@ public class MenuController {
         return Result.succeed("添加菜单成功！");
     }
 
+    /**
+     * 删除菜单
+     *
+     * @param menuId 待删除菜单id
+     */
+    @ResponseBody
+    @DeleteMapping("/menu")
+    public Result<String> deleteMenu(@RequestParam Long menuId) {
+        Long operatorId = 1L;
+        String operatorName = "杨光";
+        service.deleteMenu(menuId,operatorId,operatorName);
+        return Result.succeed("删除成功！");
+    }
+
     // 页面渲染
     @RequestMapping("/menuIndex")
     public String menuIndex() {
