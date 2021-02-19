@@ -7,6 +7,7 @@ spring:
     password: osyVW>GM+9<b
     type: com.alibaba.druid.pool.DruidDataSource
   #静态资源设置
+
   web:
     resources:
       static-locations: classpath:/static,classpath:/templates
