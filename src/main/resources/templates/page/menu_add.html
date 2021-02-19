@@ -1,112 +1,112 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <title>添加菜单</title>
-        <link rel="stylesheet" th:href="@{layui/lib/layui-v2.5.5/css/layui.css}" media="all">
-        <link rel="stylesheet" th:href="@{layui/css/public.css}" media="all">
-        <style></style>
-    </head>
-    <body>
-        <div class="layuimini-main">
-            <div class="layui-form layuimini-form">
-                <input type="hidden" th:value="${parentId}" name="parentId">
-                <div class="layui-form-item">
-                    <label class="layui-form-label required">名称</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="name" lay-verify="required" lay-reqtext="名称不能为空"
-                               placeholder="请输入名称" value="" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">状态</label>
-                    <div class="layui-input-block">
-                        <input type="checkbox" name="status" checked lay-skin="switch" lay-text="启用|禁用">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">类型</label>
-                    <div class="layui-input-block" th:if="${type eq null||type eq 3}">
-                        <input type="radio" name="type" value="0" title="目录" checked>
-                        <input type="radio" name="type" value="3" title="导航菜单">
-                    </div>
-                    <div class="layui-input-block" th:if="${type eq 0}">
-                        <input type="radio" name="type" value="1" title="菜单" checked>
-                    </div>
-                    <div class="layui-input-block" th:if="${type eq 1}">
-                        <input type="radio" name="type" value="2" title="按钮" checked>
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label ">路径</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="url" placeholder="请输入路径" value="" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">排序号</label>
-                    <div class="layui-input-inline">
-                        <input type="number" name="sort" placeholder="请输入排序" value="" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
-                    </div>
-                </div>
+<head>
+    <meta charset="UTF-8">
+    <title>添加菜单</title>
+    <link rel="stylesheet" th:href="@{layui/lib/layui-v2.5.5/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{layui/css/public.css}" media="all">
+    <style></style>
+</head>
+<body>
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form">
+        <input name="parentId" type="hidden" th:value="${parentId}">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" lay-verify="required" lay-reqtext="名称不能为空"
+                       placeholder="请输入名称" value="" class="layui-input">
             </div>
         </div>
-        <script th:src="@{layui/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
-        <script>
-            layui.use(['form', 'table'], function () {
-                var form = layui.form,
-                    layer = layui.layer,
-                    table = layui.table,
-                    $ = layui.$;
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" checked lay-skin="switch" lay-text="启用|禁用">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block" th:if="${type eq null||type eq 3}">
+                <input type="radio" name="type" value="0" title="目录" checked>
+                <input type="radio" name="type" value="3" title="导航菜单">
+            </div>
+            <div class="layui-input-block" th:if="${type eq 0}">
+                <input type="radio" name="type" value="1" title="菜单" checked>
+            </div>
+            <div class="layui-input-block" th:if="${type eq 1}">
+                <input type="radio" name="type" value="2" title="按钮" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label ">路径</label>
+            <div class="layui-input-inline">
+                <input type="text" name="url" placeholder="请输入路径" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序号</label>
+            <div class="layui-input-inline">
+                <input type="number" name="sort" placeholder="请输入排序" value="" class="layui-input">
+            </div>
+        </div>
 
-                /**
-                 * 初始化表单，要加上，不然刷新部分组件可能会不加载
-                 */
-                form.render();
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{layui/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            $ = layui.$;
 
-                // 当前弹出层，防止ID被覆盖
-                var parentIndex = layer.index;
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
 
-                //监听提交
-                form.on('submit(saveBtn)', function (data) {
-                    var datas = data.field;
-                    if (datas.status === 'on') {
-                        datas.status = 1;
+        // 当前弹出层，防止ID被覆盖
+        var parentIndex = layer.index;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var datas = data.field;
+            if (datas.status === 'on') {
+                datas.status = 1;
+            } else {
+                datas.status = -1;
+            }
+            console.log(datas);
+
+            $.ajax({
+                url: 'menu',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(datas),
+                success: function (result) {
+                    console.log(result);
+                    if (result.code === 0) {
+                        layer.msg("添加成功", {
+                            icon: 6,
+                            time: 500
+                        }, function () {
+                            parent.window.location.reload();//重新加载页面
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        });
+
                     } else {
-                        datas.status = -1;
+                        layer.msg("添加失败！");
                     }
-                    console.log(datas);
-
-                    $.ajax({
-                        url: 'menu',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify(datas),
-                        success: function (result) {
-                            console.log(result);
-                            if (result.code === 0) {
-                                layer.msg("添加成功", {
-                                    icon: 6,
-                                    time: 500
-                                }, function () {
-                                    parent.window.location.reload();//重新加载页面
-                                    var iframeIndex = parent.layer.getFrameIndex(window.name);
-                                    parent.layer.close(iframeIndex);
-                                });
-
-                            } else {
-                                layer.msg("添加失败！");
-                            }
-                        }
-                    });
-                    return false;
-                });
+                }
             });
-        </script>
-    </body>
+            return false;
+        });
+    });
+</script>
+</body>
 </html>
